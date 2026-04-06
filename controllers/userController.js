@@ -64,7 +64,7 @@ async function getUserData(req, res) {
     try {
         const { _id } = req.user;
         const user = await userModel.findById(_id);
-        console.log(user);
+        // console.log(user);
         res.json({ success: true, user });
     } catch (error) {
         console.log(error.message);

@@ -137,4 +137,18 @@ async function getserviceproviderData(req, res) {
     }
 }
 
-module.exports = { changeRole, addRental, listRentals, toggleRentalAvailability, editRentals, getserviceproviderData, deleteRental, submitDetails };
+async function getData(req, res) {
+    try {
+        const { _id, role } = req.user;
+        if (role !== "serviceprovider") {
+            return res.json({ success: false, message: "Unauthorized" })
+        };
+        const user = await serviceprovidermodel.findById(_id);
+        res.json({ success: true, user });
+    } catch (error) {
+        res.json({ success: false, message: error.message });
+
+    }
+}
+
+module.exports = { changeRole, addRental, listRentals, toggleRentalAvailability, editRentals, getserviceproviderData, deleteRental, submitDetails, getData };

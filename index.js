@@ -16,6 +16,7 @@ const rentalsRouter = require("./routes/rentalsRouter");
 const transportRouter = require("./routes/transportRouter");
 const shopRouter = require("./routes/shopRouter");
 const bookingRouter = require("./routes/bookingRouter");
+const contractRouter = require("./routes/contractRouter");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -39,6 +40,7 @@ app.use("/shop", shopRouter);
 app.use("/products", productsRouter);
 app.use("/rentals", rentalsRouter);
 app.use("/transport", transportRouter);
+app.use("/api/contractfarming", contractRouter);
 
 const port = process.env.PORT || 3000;
 app.listen(port);
