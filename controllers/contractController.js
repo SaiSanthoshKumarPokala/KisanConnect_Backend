@@ -221,6 +221,45 @@ async function getMyApplications(req, res) {
     }
 }
 
+
+// ─── Both: Get ongoing accepted contract deals (for notification panel) ────────
+async function getOngoingDeals(req, res) {
+    try {
+        const { _id, role } = req.user;
+
+        if (role === "serviceprovider") {
+            // SP: accepted applications on their active contracts
+            const myContracts = await contractmodel
+                .find({ owner: _id, status: "Active" })
+                .select("_id");
+            const contractIds = myContracts.map((c) => c._id);
+
+            const deals = await contractApplicationModel
+                .find({ contract: { $in: contractIds }, status: "Accepted" })
+                .populate("contract", "crop variety company region season priceMin priceMax duration")
+                .sort({ createdAt: -1 });
+
+            return res.json({ success: true, deals });
+        } else {
+            // Farmer: their own accepted applications on active contracts
+            const deals = await contractApplicationModel
+                .find({ farmer: _id, status: "Accepted" })
+                .populate("contract", "crop variety company region season priceMin priceMax duration status")
+                .sort({ createdAt: -1 });
+
+            // Filter to only contracts that are still Active
+            const activeDeals = deals.filter(
+                (d) => d.contract && d.contract.status === "Active"
+            );
+
+            return res.json({ success: true, deals: activeDeals });
+        }
+    } catch (error) {
+        console.log(error.message);
+        res.json({ success: false, message: error.message });
+    }
+}
+
 module.exports = {
     postContract,
     getMyContracts,
@@ -228,5 +267,6 @@ module.exports = {
     closeContract,
     getAllContracts,
     applyForContract,
-    getMyApplications
+    getMyApplications,
+    getOngoingDeals,
 };

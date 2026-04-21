@@ -24,12 +24,29 @@ async function changeRole(req, res) {
 async function submitDetails(req, res) {
     try {
         const { _id } = req.user;
-        const { email, name, dateofbirth, phonenumber, address, pincode, state } = req.body;
-        await serviceprovidermodel.create({
-            _id, email, name, dateofbirth
-            , phonenumber, address, pincode, state
-        });
-        res.json({ success: true, message: "Details updated successfully" })
+        const {
+            email, name, dateofbirth, phonenumber,
+            address, pincode, state,
+            // SP-specific
+            businessName, serviceType, serviceArea, alternatePhone, bio,
+        } = req.body;
+
+        // Use findByIdAndUpdate so existing docs are updated, not duplicated
+        await serviceprovidermodel.findByIdAndUpdate(
+            _id,
+            {
+                email, name, dateofbirth, phonenumber,
+                address, pincode, state,
+                businessName:   businessName   || "",
+                serviceType:    serviceType    || "",
+                serviceArea:    serviceArea    || "",
+                alternatePhone: alternatePhone || "",
+                bio:            bio            || "",
+            },
+            { upsert: true, new: true }
+        );
+
+        res.json({ success: true, message: "Details updated successfully" });
     } catch (error) {
         res.json({ success: false, message: error.message });
     }
@@ -141,14 +158,14 @@ async function getData(req, res) {
     try {
         const { _id, role } = req.user;
         if (role !== "serviceprovider") {
-            return res.json({ success: false, message: "Unauthorized" })
-        };
+            return res.json({ success: false, message: "Unauthorized" });
+        }
         const user = await serviceprovidermodel.findById(_id);
         res.json({ success: true, user });
     } catch (error) {
         res.json({ success: false, message: error.message });
-
     }
 }
+
 
 module.exports = { changeRole, addRental, listRentals, toggleRentalAvailability, editRentals, getserviceproviderData, deleteRental, submitDetails, getData };

@@ -6,7 +6,6 @@ const dotenv = require("dotenv/config");
 
 const app = express();
 
-
 const db = require("./config/mongooseconnection");
 const userRouter = require("./routes/userRouter");
 const serviceproviderRouter = require("./routes/serviceproviderRouter");
@@ -17,30 +16,33 @@ const transportRouter = require("./routes/transportRouter");
 const shopRouter = require("./routes/shopRouter");
 const bookingRouter = require("./routes/bookingRouter");
 const contractRouter = require("./routes/contractRouter");
+const coldStorageRouter = require("./routes/coldStorageRouter");
+const marketplaceRouter = require("./routes/marketplaceRouter");
+const orderRouter = require("./routes/orderRouter");
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-// app.set("view engine","ejs");
-app.use(cors({origin:"http://localhost:5173",allowedHeaders:['Authorization','Content-Type'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+app.use(cors({
+    origin: "http://localhost:5173",
+    // origin: ["http://192.168.1.7:5173","http://localhost:5173"],
+    allowedHeaders: ["Authorization", "Content-Type"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 }));
 
-// var corsOptions = {
-//   origin: 'http://localhost:5173',
-//   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-// }
-
-app.use("/api/user", userRouter)
+app.use("/api/user", userRouter);
 app.use("/api/farmer", farmerRouter);
 app.use("/api/serviceprovider", serviceproviderRouter);
-app.use("/api/bookings",bookingRouter);
-app.use("/shop", shopRouter);
-app.use("/products", productsRouter);
-app.use("/rentals", rentalsRouter);
-app.use("/transport", transportRouter);
+app.use("/api/bookings", bookingRouter);
 app.use("/api/contractfarming", contractRouter);
+app.use("/api/coldstorage", coldStorageRouter);
+app.use("/api/transport", transportRouter);
+app.use("/api/rentals", rentalsRouter);
+app.use("/api/shop", shopRouter);
+app.use("/api/marketplace", marketplaceRouter);
+app.use("/products", productsRouter);
+app.use("/api/buy", orderRouter)
 
 const port = process.env.PORT || 3000;
 app.listen(port);
