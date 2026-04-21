@@ -25,7 +25,7 @@ app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: "https://kisan-connect-project.vercel.app/",
     // origin: ["http://192.168.1.7:5173","http://localhost:5173"],
     allowedHeaders: ["Authorization", "Content-Type"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
